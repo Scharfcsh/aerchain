@@ -118,6 +118,7 @@ export function VoiceInput() {
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         task={editingTask}
+        newtask={true}
       />
 
       <AlertDialog open={!!error} onOpenChange={() => setError(null)}>

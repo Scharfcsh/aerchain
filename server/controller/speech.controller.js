@@ -19,26 +19,39 @@ export async function parseSpeechTask(req, res) {
 
     const ai = new GoogleGenAI({ apiKey });
 
-    const prompt = `
-You are a task parser. Extract the following fields and return ONLY strict JSON:
+    const prompt = `You are a task parser. Extract the following fields and return ONLY strict JSON:
 - title
 - description
-- dueDate (ISO format)
+- dueDate (ISO 8601 format in UTC)
 - priority (low/medium/high)
 
-Text: "${text}"
+TODAY'S DATE: 2025-12-04  
+(Must be used as the reference point for all date reasoning.)
 
-Rules:
-- Return only a JSON object, no markdown, code fences, or explanation
-- Use ISO 8601 for dueDate
-- priority must be one of: low, medium, high
-Example format:
+Rules for dates:
+- All dates MUST be in the future relative to today's date.
+- Interpret relative dates correctly (e.g., "tomorrow", "next Monday", "this Friday evening", “before noon”, “by end of day”).
+- If the user mentions a past date, shift it to the *next logical future occurrence*.
+- If no date is mentioned, set dueDate to null.
+- Due date MUST be in full ISO string including time (e.g., "2025-12-06T09:00:00Z").
+
+Rules for output:
+- Return only a JSON object, no markdown, no code fences.
+- The title must be a short command-style summary.
+- The description must be a complete, fully descriptive sentence explaining the task clearly.
+- priority must be one of: low, medium, high. Default is medium if unclear.
+
+Input:
+"${text}"
+
+Example output:
 {
   "title": "Send project report",
-  "description": "Send the project report to the manager",
+  "description": "Send the full project report to the manager before the specified deadline.",
   "dueDate": "2025-12-03T09:00:00Z",
   "priority": "high"
-}`;
+}
+`;
 
 console.log("Prompt sent to model:", prompt);
 

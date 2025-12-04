@@ -25,9 +25,10 @@ interface TaskFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   task?: any
+  newtask?: boolean
 }
 
-export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps) {
+export function TaskFormDialog({ open, onOpenChange, task, newtask=false }: TaskFormDialogProps) {
   const { addTask, updateTask } = useTaskContext()
   const [formData, setFormData] = useState<TaskFormData>({
     title: "",
@@ -65,7 +66,7 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
       return
     }
 
-    if (task) {
+    if (task && !newtask) {
       updateTask(task.id, formData)
     } else {
       addTask(formData)
