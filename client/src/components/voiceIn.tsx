@@ -2,7 +2,7 @@
 
 import { useState} from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, Loader2, AlertCircle } from "lucide-react";
+import { Mic, Loader2, AlertCircle, Square } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -16,15 +16,14 @@ import { TaskFormDialog } from "./taskForm";
 
 export function VoiceInput() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-
   const [editingTask, setEditingTask] = useState<TaskFormData | undefined>(
     undefined
   );
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [transcriptPreview, setTranscriptPreview] = useState<string>("");
   // const { addTask } = useTaskContext();
-
 
   const handleListening = async () => {
     console.log("Starting voice input...");
@@ -35,6 +34,7 @@ export function VoiceInput() {
       //   const test = "Remind me to send the project proposal to the client by next Wednesday, it's high priority"
       const { transcript } = await startListening();
       console.log("Transcript:", transcript);
+      setTranscriptPreview(transcript);
 
       const response = await fetch(
         "https://aerchain-server.vercel.app/api/v1/speech",
@@ -65,16 +65,6 @@ export function VoiceInput() {
           new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
       });
 
-      //   addTask({
-      //     title: json.title || "Untitled Task",
-      //     description: json.description || "",
-      //     status: "to-do",
-      //     priority: (json.priority || "medium").toLowerCase(),
-      //     dueDate:
-      //       json.dueDate ||
-      //       new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-      //   });
-
       setError(null);
     } catch (error: any) {
       console.error("Voice task creation error:", error);
@@ -87,32 +77,59 @@ export function VoiceInput() {
     }
   };
 
+  const handleStop = () => {
+    console.log("Stopping voice input...");
+    stopListening();
+    setIsListening(false);
+    setIsProcessing(false);
+  };
+
   return (
     <>
-      <Button
-        onClick={handleListening}
-        disabled={isListening || isProcessing}
-        variant="default"
-        size="lg"
-        className="gap-2"
-      >
-        {isListening ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Listening...
-          </>
-        ) : isProcessing ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          <>
-            <Mic className="h-4 w-4" />
-            Voice Input
-          </>
+      <div className="flex gap-2 items-center">
+        <Button
+          onClick={handleListening}
+          disabled={isListening || isProcessing}
+          variant="default"
+          size="lg"
+          className="gap-2"
+        >
+          {isListening ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Listening...
+            </>
+          ) : isProcessing ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <Mic className="h-4 w-4" />
+              Voice Input
+            </>
+          )}
+        </Button>
+
+        {isListening && (
+          <Button
+            onClick={handleStop}
+            variant="destructive"
+            size="lg"
+            className="gap-2"
+          >
+            <Square className="h-4 w-4" />
+            Stop
+          </Button>
         )}
-      </Button>
+      </div>
+
+      {transcriptPreview && (
+        <div className="mt-2 text-sm text-muted-foreground">
+          <span className="font-medium">Captured transcript:</span> {transcriptPreview}
+        </div>
+      )}
 
       <TaskFormDialog
         open={isFormOpen}
