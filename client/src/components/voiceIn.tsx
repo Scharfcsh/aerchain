@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState} from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Loader2, AlertCircle } from "lucide-react";
 import {
@@ -9,7 +9,7 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useTaskContext } from "@/lib/taskContext";
+// import { useTaskContext } from "@/lib/taskContext";
 import { startListening, stopListening } from "@/lib/script";
 import type { TaskFormData } from "@/lib/types";
 import { TaskFormDialog } from "./taskForm";
@@ -23,7 +23,7 @@ export function VoiceInput() {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { addTask } = useTaskContext();
+  // const { addTask } = useTaskContext();
 
 
   const handleListening = async () => {
