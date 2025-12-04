@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import type {  TaskFormData, TaskPriority, TaskStatus } from "@/lib/types"
+import type { TaskFormData, TaskPriority, TaskStatus } from "@/lib/types"
 import { useTaskContext } from "@/lib/taskContext"
 
 interface TaskFormDialogProps {
@@ -26,9 +26,10 @@ interface TaskFormDialogProps {
   onOpenChange: (open: boolean) => void
   task?: any
   newtask?: boolean
+  transcript?: string
 }
 
-export function TaskFormDialog({ open, onOpenChange, task, newtask=false }: TaskFormDialogProps) {
+export function TaskFormDialog({ open, onOpenChange, task, newtask=false, transcript }: TaskFormDialogProps) {
   const { addTask, updateTask } = useTaskContext()
   const [formData, setFormData] = useState<TaskFormData>({
     title: "",
@@ -84,6 +85,17 @@ export function TaskFormDialog({ open, onOpenChange, task, newtask=false }: Task
             {task ? "Update your task details below." : "Add a new task to your list."}
           </DialogDescription>
         </DialogHeader>
+        {transcript && (
+          <div className="mt-2">
+            <Label htmlFor="transcript">Transcribed Text:</Label>
+            <div
+              id="transcript"
+              className="mt-1 max-h-24 overflow-auto wrap-break-word rounded border p-2 text-sm bg-muted/30"
+            >
+              {transcript}
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

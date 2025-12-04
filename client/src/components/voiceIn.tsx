@@ -125,11 +125,11 @@ export function VoiceInput() {
         )}
       </div>
 
-      {transcriptPreview && (
+      {/* {transcriptPreview && (
         <div className="mt-2 text-sm text-muted-foreground">
           <span className="font-medium">Captured transcript:</span> {transcriptPreview}
         </div>
-      )}
+      )} */}
 
       <TaskFormDialog
         open={isFormOpen}
