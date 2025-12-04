@@ -19,19 +19,19 @@ import { Plus, Layout, List } from "lucide-react"
 import type { Task, TaskPriority, TaskStatus } from "./lib/types"
 import { TaskProvider, useTaskContext } from "./lib/taskContext"
 
-(function enableConsoleForwarding() {
-  const originalLog = console.log;
+// (function enableConsoleForwarding() {
+//   const originalLog = console.log;
 
-  console.log = (...args) => {
-    originalLog(...args);
+//   console.log = (...args) => {
+//     originalLog(...args);
 
-    fetch("/__log", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logs: args }),
-    }).catch(() => {});
-  };
-})();
+//     fetch("/__log", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ logs: args }),
+//     }).catch(() => {});
+//   };
+// })();
 
 
 function TaskManagerContent() {
