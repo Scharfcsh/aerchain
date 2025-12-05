@@ -3,6 +3,31 @@ import { configDotenv } from "dotenv";
 
 configDotenv();
 
+// Utility: Get current date-time in Indian Standard Time formatted like
+// "Fri Dec 05 2025 04:11:14 GMT+0530 (India Standard Time)"
+function getISTNowString() {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kolkata",
+    weekday: "short",
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  const parts = Object.fromEntries(
+    formatter.formatToParts(now).map((p) => [p.type, p.value])
+  );
+
+  // IST is always GMT+0530 with no DST
+  const tzSuffix = "GMT+0530 (India Standard Time)";
+  return `${parts.weekday} ${parts.month} ${parts.day} ${parts.year} ${parts.hour}:${parts.minute}:${parts.second} ${tzSuffix}`;
+}
+
 // Express controller for POST /api/v1/speech
 export async function parseSpeechTask(req, res) {
   try {
@@ -18,6 +43,10 @@ export async function parseSpeechTask(req, res) {
     }
 
     const ai = new GoogleGenAI({ apiKey });
+    const today = new Date();
+
+    // Optional: Use IST now string if needed in prompts/logs
+    const istNow = getISTNowString();
 
     const prompt = `You are a task parser. Extract the following fields and return ONLY strict JSON:
 - title
@@ -25,7 +54,8 @@ export async function parseSpeechTask(req, res) {
 - dueDate (ISO 8601 format in UTC)
 - priority (low/medium/high)
 
-TODAY'S DATE: 2025-12-04  
+TODAY'S DATE: ${today.toISOString().split("T")[0]}  
+(IST Now: ${istNow})
 (Must be used as the reference point for all date reasoning.)
 
 Rules for dates:
@@ -53,7 +83,7 @@ Example output:
 }
 `;
 
-console.log("Prompt sent to model:", prompt);
+    console.log("Prompt sent to model (IST now):", istNow);
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
